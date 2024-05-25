@@ -34,7 +34,9 @@ export function useFetch<T>(
 
     setTag("loading");
 
-    fetcher("https://fakestoreapi.com/products/" + productId + "?limit=2")
+    fetcher(
+      "https://jsonplaceholder.typicode.com/todos/" + productId + "?limit=2"
+    )
       .then((data) => {
         if (data) {
           setTag("success");
@@ -68,7 +70,31 @@ export function useFetch<T>(
     if (tag === "loading") return;
 
     getData();
-  }, [enableCache]);
+  }, []);
+
+  useEffect(() => {
+    if (!productId && enableCache && cache?.["all"]) {
+      setTag("success");
+      setData(cache?.["all"]);
+      setErrorMessage("");
+      return;
+    } else if (cache?.[productId] && enableCache) {
+      setTag("success");
+      setData(cache[productId]);
+      setErrorMessage("");
+      return;
+    } else if (enableCache && data?.length > 0) {
+      setCache({
+        ...cache,
+        all: data,
+      });
+    } else if (enableCache && !data?.length) {
+      setCache({
+        ...cache,
+        [productId]: data,
+      });
+    }
+  }, [enableCache, tag]);
 
   switch (tag) {
     case "idle":
