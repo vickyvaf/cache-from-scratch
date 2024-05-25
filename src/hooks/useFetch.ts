@@ -10,7 +10,7 @@ type ReturnType<T> =
   | { tag: "error"; errorMessage: string; mutate: () => void; cache: any };
 
 export function useFetch<T>(
-  productId: string,
+  id: string,
   { enableCache }: { enableCache?: boolean } = {}
 ): ReturnType<T | null> {
   const [tag, setTag] = useState<Tag>("idle");
@@ -20,39 +20,37 @@ export function useFetch<T>(
   const [cache, setCache] = useState<T | null | any>(null);
 
   function getData() {
-    if (!productId && enableCache && cache?.["all"]) {
+    if (!id && enableCache && cache?.["all"]) {
       setTag("success");
       setData(cache?.["all"]);
       setErrorMessage("");
       return;
-    } else if (cache?.[productId] && enableCache) {
+    } else if (cache?.[id] && enableCache) {
       setTag("success");
-      setData(cache[productId]);
+      setData(cache[id]);
       setErrorMessage("");
       return;
     }
 
     setTag("loading");
 
-    fetcher(
-      "https://jsonplaceholder.typicode.com/todos/" + productId + "?limit=2"
-    )
+    fetcher("https://jsonplaceholder.typicode.com/todos/" + id)
       .then((data) => {
         if (data) {
           setTag("success");
           setErrorMessage("");
-          setData(data);
+          setData(Array.isArray(data) ? data?.slice(0, 5) : data);
           if (enableCache && data?.length > 0) {
             setCache({
               ...cache,
-              all: data,
+              all: data?.slice(0, 5),
             });
           }
 
           if (enableCache && !data?.length) {
             setCache({
               ...cache,
-              [productId]: data,
+              [id]: data,
             });
           }
         } else {
@@ -63,6 +61,7 @@ export function useFetch<T>(
       .catch((error) => {
         setTag("error");
         setErrorMessage(error);
+        console.log(error);
       });
   }
 
@@ -73,25 +72,25 @@ export function useFetch<T>(
   }, []);
 
   useEffect(() => {
-    if (!productId && enableCache && cache?.["all"]) {
+    if (!id && enableCache && cache?.["all"]) {
       setTag("success");
       setData(cache?.["all"]);
       setErrorMessage("");
       return;
-    } else if (cache?.[productId] && enableCache) {
+    } else if (cache?.[id] && enableCache) {
       setTag("success");
-      setData(cache[productId]);
+      setData(cache[id]);
       setErrorMessage("");
       return;
-    } else if (enableCache && data?.length > 0) {
+    } else if (enableCache && Array.isArray(data)) {
       setCache({
         ...cache,
         all: data,
       });
-    } else if (enableCache && !data?.length) {
+    } else if (enableCache && !Array.isArray(data)) {
       setCache({
         ...cache,
-        [productId]: data,
+        [id]: data,
       });
     }
   }, [enableCache, tag]);

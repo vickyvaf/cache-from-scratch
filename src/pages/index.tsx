@@ -20,9 +20,9 @@ export default function Home() {
   return (
     <div className="flex items-center gap-3">
       <div className=" px-5 mt-10 overflow-scroll w-1/2 h-[600px]">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 mb-3">
           <input
-            className="mb-2 bg-zinc-600"
+            className="bg-zinc-600"
             onChange={(e) => setProductId(e.target.value)}
             value={productId}
             placeholder="Insert product id 🐠"
@@ -30,7 +30,7 @@ export default function Home() {
           <button
             type="submit"
             disabled={productState.tag === "loading"}
-            className="border-2 border-zinc-400 py-[2px] px-2 rounded-md"
+            className="border-[1px] text-sm border-zinc-400 py-[2px] px-2"
             onClick={() => {
               if (productState.tag !== "loading") {
                 productState.mutate();
@@ -49,7 +49,7 @@ export default function Home() {
             }}
             checked={isEnableCache}
             type="checkbox"
-          />{" "}
+          />
           <span>Enable caching</span>
         </div>
 
@@ -57,7 +57,11 @@ export default function Home() {
       </div>
 
       <div className=" px-5 mt-10 overflow-scroll w-1/2  h-[600px]">
-        <h1 className="mb-3">Cache datas</h1>
+        <div className="flex items-center mb-3 justify-between">
+          <h1>Cache datas</h1>
+
+          {/* <button>Clear cache</button> */}
+        </div>
 
         {isEnableCache !== "false" && (
           <pre>{JSON.stringify(productState?.cache, undefined, 2)}</pre>
