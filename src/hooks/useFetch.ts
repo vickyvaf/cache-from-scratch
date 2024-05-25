@@ -68,7 +68,7 @@ export function useFetch<T>(
     if (tag === "loading") return;
 
     getData();
-  }, []);
+  }, [enableCache]);
 
   switch (tag) {
     case "idle":
